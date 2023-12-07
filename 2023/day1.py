@@ -1,7 +1,7 @@
 import re
 
 
-with open("input_day1.txt", "r") as f:
+with open("input", "r") as f:
     result = 0
     for line in f:
         first = re.match(r"[^\d]*(\d)", line).group(1)
@@ -36,7 +36,7 @@ def overlap_find(matcher, line):
 
 
 
-with open("input_day1.txt", "r") as f:
+with open("input", "r") as f:
     result = 0
     for line in f:
         matcher = rf"(\d|one|two|three|four|five|six|seven|eight|nine)"
