@@ -65,6 +65,8 @@ result = min(minimal_heat[(len(data)-1, len(line0)-1, "v")],
         minimal_heat[(len(data)-1, len(line0)-1, "h")])
 print(result)
 
+#============part2
+
 minimal_heat = defaultdict(lambda: float("Inf"))
 possibles = [
     (0, (0,0), "v"),
