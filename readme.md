@@ -6,3 +6,4 @@
 Learn from others:
 
 - https://github.com/fuglede/adventofcode
+- https://github.com/ricbit/advent-of-code
