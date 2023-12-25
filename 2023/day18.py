@@ -1,82 +1,72 @@
+import re
+
+
 with open("input") as f:
     data = f.readlines()
 
-right_most = 0
-down_most = 0
 current_row = 0
 current_col = 0
-points = []
+last_row = 0
+last_col = 0
+acc = 0
+
+perimeter = 0
 
 for line in data:
     direction, count, color = line.split(" ")
     count = int(count)
+    perimeter += count
     if direction == "R":
-        for i in range(1, count + 1):
-            points.append((current_row, current_col + i, color))
         current_col += count
-        right_most = max(right_most, current_col)
     if direction == "L":
-        for i in range(1, count + 1):
-            points.append((current_row, current_col - i, color))
         current_col -= count
     if direction == "D":
-        for i in range(1, count + 1):
-            points.append((current_row + i, current_col, color))
         current_row += count
-        down_most = max(down_most, current_row)
     if direction == "U":
-        for i in range(1, count + 1):
-            points.append((current_row - i, current_col, color))
         current_row -= count
 
-rect = [[False] * (right_most + 1) for _ in range(down_most + 1)]
-for p in points:
-    row, col, _ = p
-    rect[row][col] = True
+    acc += last_row * current_col - current_row * last_col
+    last_row = current_row
+    last_col = current_col
 
+acc += last_row * current_col - current_row * last_col
 
-def inside(r, c, rect):
-    if rect[row_i][col_i]:
-        return True
-    total_row = len(rect)
-    total_cross = 0
-    edge_connect_right = edge_connect_left = 0
-    # left most or right most
-    if c == 0 or c == len(rect[r]) - 1:
-        return False
-
-    for line_i in range(r + 1, total_row):
-        if not rect[line_i][c]:
-            continue
-        left = rect[line_i][c - 1]
-        right = rect[line_i][c + 1]
-        if left and right:
-            total_cross += 1
-            continue
-        elif left and not right:
-            edge_connect_left += 1
-            continue
-        elif not left and right:
-            edge_connect_right += 1
-            continue
-    total_cross = total_cross + min(edge_connect_left, edge_connect_right)
-    return total_cross % 2 == 1
-
-
-for row_i in range(len(rect)):
-    row = rect[row_i]
-    for col_i in range(len(row)):
-        if inside(row_i, col_i, rect):
-            rect[row_i][col_i] = True
-
-for row in rect:
-    for c in row:
-        if c:
-            print("#", end="")
-        else:
-            print(".", end="")
-    print()
-
-result = sum(sum(row) for row in rect)
+result = abs(acc/2)  + perimeter /2 + 1
 print(result)
-print(list(sum(row) for row in rect))
+
+with open("input") as f:
+    data = f.readlines()
+
+current_row = 0
+current_col = 0
+last_row = 0
+last_col = 0
+acc = 0
+
+perimeter = 0
+
+for line in data:
+    _, _, color = line.split(" ")
+    m = re.match(r'\(#(.{5})(\d)\)', color)
+    dis = int(m.group(1), 16)
+    direc = m.group(2)
+    count = dis
+    direction = {"0": "R", "1": "D", "2": "L", "3":"U"}[direc]
+    perimeter += count
+    if direction == "R":
+        current_col += count
+    if direction == "L":
+        current_col -= count
+    if direction == "D":
+        current_row += count
+    if direction == "U":
+        current_row -= count
+
+    acc += last_row * current_col - current_row * last_col
+    last_row = current_row
+    last_col = current_col
+
+acc += last_row * current_col - current_row * last_col
+
+result = abs(acc/2)  + perimeter /2 + 1
+print(result)
