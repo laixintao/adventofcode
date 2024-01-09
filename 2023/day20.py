@@ -4,7 +4,7 @@ class Module:
         self.outputs = []
 
     def trigger(self, event):
-        print(f"{event._from} -{event.pause}-> {event.to}")
+        # print(f"{event._from} -{event.pause}-> {event.to}")
         pass
 
     def __repr__(self) -> str:
@@ -91,13 +91,15 @@ def push_button(module_dict):
                 low += 1
             else:
                 high += 1
+            if new_event.to.name == "rx" and new_event.pause == "low":
+                print(new_event.pause)
     flipflop_modules = module_dict.values()
     sorted_flipflop_modules = sorted(flipflop_modules, key=lambda m: m.name)
     states = [m.state_unique for m in sorted_flipflop_modules]
-    print(states)
+    # print(states)
     return states, low, high
 
-def main():
+def read_data():
     with open("input") as f:
         lines = f.readlines()
 
@@ -121,38 +123,46 @@ def main():
             name = name.strip()
         else:
             name = name[1:].strip()
+
         for output in outputs:
             output = output.strip()
+            if output not in module_dict:
+                module_dict[output] = Module(output)
             module_dict[name].outputs.append(module_dict[output])
             output_module = module_dict[output]
             if isinstance(output_module, Conjunction):
                 output_module.inputs[name] = "low"
+    return module_dict
+    
 
+def part1(module_dict):
     count = 0
     seen_states = {}
     pauses = []
-    first = second = None
+
+    total_low = total_high = 0
     while True:
         states, low, high = push_button(module_dict)
         print(count, low, high)
+        total_low += low
+        total_high += high
         pauses.append((low,high))
-        if tuple(states) in seen_states:
-            first = seen_states[tuple(states)]
-            second = count + 1
-            break
+
         seen_states[tuple(states)] = count
         count += 1
-    print(first, second)
-    low_pauses_in_a_loop = sum([p[0] for p in pauses[first:second]])
-    high_pauses_in_a_loop = sum([p[1] for p in pauses[first:second]])
-    low_pauses_in_reminder = sum([p[0] for p in pauses[:1000 % (second - first)]])
-    high_pauses_in_reminder = sum([p[1] for p in pauses[:1000 % (second - first)]])
+        if count == 1000:
+            print(total_high * total_low)
+            return
 
-    loop_count = (1000 - first) // (second - first)
-    print(loop_count, low_pauses_in_a_loop, low_pauses_in_reminder)
-    total_low = (loop_count * low_pauses_in_a_loop + low_pauses_in_reminder)
-    total_high = (loop_count * high_pauses_in_a_loop + high_pauses_in_reminder)
-    print(total_low, total_high)
-    print(total_high*total_low)
+def part2(module_dict):
+    count = 0
 
-main()
+    while True:
+        states, low, high = push_button(module_dict)
+        print(count)
+
+        count += 1
+        
+module_dict = read_data()
+part1(module_dict)
+part2(module_dict)
