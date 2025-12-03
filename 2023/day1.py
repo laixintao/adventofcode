@@ -1,13 +1,13 @@
 import re
 
 
-with open("input", "r") as f:
-    result = 0
-    for line in f:
-        first = re.match(r"[^\d]*(\d)", line).group(1)
-        last = re.match(r".*(\d)(?!.*\d)", line).group(1)
-        result += int(first + last)
-    print(result)
+# with open("input", "r") as f:
+#     result = 0
+#     for line in f:
+#         first = re.match(r"[^\d]*(\d)", line).group(1)
+#         last = re.match(r".*(\d)(?!.*\d)", line).group(1)
+#         result += int(first + last)
+#     print(result)
 
 words = {
     "one": "1",
