@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define LINE_BUFFER_SIZE 1024
 
@@ -11,6 +12,7 @@ int compute(char * filename){
     }
     char buffer[LINE_BUFFER_SIZE];
     while (fgets(buffer, sizeof(buffer), fp)) {
+        buffer[strcspn(buffer, "\n")] = '\0';
         // here!
     }
     return counter;
