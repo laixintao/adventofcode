@@ -5,6 +5,15 @@
 #define LINE_BUFFER_SIZE 1024
 #define MAX 1024
 
+int cmp(const void *a, const void *b) {
+    const long long *x = (const long long *)a;
+    const long long *y = (const long long *)b;
+
+    if (x[0] < y[0]) return -1;
+    if (x[0] > y[0]) return 1;
+    return 0;
+}
+
 int compute(char * filename){
     FILE* fp = fopen(filename, "r");
     if (!fp) {
@@ -34,24 +43,24 @@ int compute(char * filename){
         range[len][0] = start;
         range[len++][1] = end;
     }
+
+    qsort(range, len, sizeof(range[0]), cmp);
+
     for (int i=0;i<len;i++){
         printf("%lld, %lld \n", range[i][0], range[i][1]);
     }
 
-        int counter = 0;
-    while (fgets(buffer, sizeof(buffer), fp)) {
-        buffer[strcspn(buffer, "\n")] = '\0';
-        long long num = strtol(buffer, NULL, 10);
-
-        for (int i=0;i<len;i++){
-            if (num >= range[i][0] && num <= range[i][1]) {
-                counter++;
-                break;
-            }
-        }
+    long long counter = 0;
+    long long current = 0;
+    for (int i=0; i<len; i++) {
+        if (range[i][0]>current) current = range[i][0];
+        long long add = (range[i][1] - current + 1);
+        if (add < 0) continue;
+        counter += add;
+        current = range[i][1]+1;
+        printf("to add: %lld, %lld - %lld, =%lld\n", add, current, range[i][1], counter);
     }
-
-    printf("counter: %d\n", counter);
+    printf("%lld\n" , counter);
     return 0;
 }
 
