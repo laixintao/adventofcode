@@ -4,11 +4,12 @@
 #include <string.h>
 
 #define LINE_BUFFER_SIZE 1024
+#define MEMBER 1000
 
 int cmp_int(const void *a, const void *b) {
-    int x = *(const int *)a;
-    int y = *(const int *)b;
-    return y-x;
+  int x = *(const int *)a;
+  int y = *(const int *)b;
+  return y - x;
 }
 
 struct Distance {
@@ -131,14 +132,21 @@ int compute(char *filename) {
   int group_members[1000000] = {0};
   int unused_group = 1;
 
-  for (int i = 0; i < 1000; i++) {
+  for (int i = 0;; i++) {
     struct Distance *d = heap_pop(hp);
-    if (!d) break;
+    if (!d)
+      break;
 
+    for (int x = 0; x < 20; x++) {
+      printf("%d ", group_members[x]);
+    }
+    printf("\n");
+    printf("last: %ld, from %ld * %ld  \n", (d->start[0]) * (d->end[0]),
+           d->start[0], d->end[0]);
     int belong_group = unused_group;
+
     if (point_groups[d->start_index] != 0 && point_groups[d->end_index] != 0) {
       if (point_groups[d->start_index] == point_groups[d->end_index]) {
-        printf(" \n");
         continue;
       }
       long old_group = point_groups[d->start_index];
@@ -150,38 +158,41 @@ int compute(char *filename) {
       group_members[new_group] += group_members[old_group];
       group_members[old_group] = 0;
 
+      if (group_members[new_group] == MEMBER)
+        break;
+
       continue;
     }
 
     if (point_groups[d->start_index] != 0) {
       point_groups[d->end_index] = point_groups[d->start_index];
       group_members[point_groups[d->start_index]]++;
+      if (group_members[point_groups[d->start_index]] == MEMBER)
+        break;
       continue;
     }
 
     if (point_groups[d->end_index] != 0) {
       point_groups[d->start_index] = point_groups[d->end_index];
       group_members[point_groups[d->end_index]]++;
+      if (group_members[point_groups[d->end_index]] == MEMBER)
+        break;
       continue;
     }
 
     point_groups[d->start_index] = point_groups[d->end_index] = unused_group;
     group_members[unused_group] += 2;
+    if (group_members[unused_group] == MEMBER)
+      break;
     unused_group++;
+
   }
 
-
-  qsort(group_members, 1000, sizeof(int), cmp_int);
-  long long ans = 1;
-  for (int i = 0; i < 3; i++) {
-      ans *= group_members[i];
-  }
-  printf("ans: %lld \n", ans);
   return 0;
 }
 
 int main() {
-  compute("sample.txt");
+  /* compute("sample.txt"); */
   compute("input.txt");
   return 0;
 }
